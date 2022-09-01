@@ -1,11 +1,9 @@
-from datetime import datetime, timezone, timedelta
-
 from dataAccess.postgresql.connection import openConnection
 from model import Currency
 from logger.logger import get_logger
 
 
-def get_currency_exchange_rate(currency):
+def get_currency_exchange_rate(date, currency):
     # logger = get_logger()
 
     conn = openConnection()
@@ -14,9 +12,9 @@ def get_currency_exchange_rate(currency):
         record = conn.execute("""
                                  SELECT quoted_date, currency, cash_buy, cash_sell, spot_buy, spot_sell
                                  FROM foreign_exchange_rate
-                                 WHERE quoted_date > %(quoted_date)s AND currency ILIKE %(currency)s;
+                                 WHERE quoted_date::date = %(quoted_date)s AND currency ILIKE %(currency)s;
                                  """,
-                                 {'quoted_date' : datetime.now(timezone.utc) - timedelta(days = 1), 
+                                 {'quoted_date' : date, 
                                  'currency' : '%{}%'.format(currency)}).fetchall()
 
     except BaseException as e:
