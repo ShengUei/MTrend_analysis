@@ -4,35 +4,36 @@ from dataAccess.postgresql.data_access import get_currency_exchange_rate_by_date
 from dataAccess.redis.connection import get_redis
 
 #job
-def three_day_alert():
+def three_day_alert(date):
+    # date = datetime.now(timezone.utc).date() - timedelta(days = 1)
+
     target_list = ['USD', 'JPY']
 
     for currency in target_list:
-        check_spot_selling(currency)
+        check_spot_selling(date, currency)
 
 #action
-def check_spot_selling(currency):
-    tody = datetime.now(timezone.utc).date() - timedelta(days = 1)
-
-    currency_obj = get_currency_exchange_rate_by_date(tody, currency)
+def check_spot_selling(date, currency):
+    
+    currency_obj = get_currency_exchange_rate_by_date(date, currency)
 
     currency = currency_obj.currency
-    spot_selling = currency_obj.spot_selling
+    now_spot_selling = currency_obj.spot_selling
 
     redis = get_redis()
 
     if redis.exists('%s_count' % currency) is 0:
         redis.set('%s_count' % currency, 0)
 
-    if redis.exists('%s_yestary_spot_selling' % currency) is 0:
-        redis.set('%s_yestary_spot_selling' % currency, spot_selling)
+    if redis.exists('%s_yesterday_spot_selling' % currency) is 0:
+        redis.set('%s_yesterday_spot_selling' % currency, now_spot_selling)
     
-    if redis.get('%s_yestary_spot_selling' % currency) > spot_selling:
+    if now_spot_selling > redis.get('%s_yesterday_spot_selling' % currency):
         redis.incr('%s_count' % currency)
-        redis.set('%s_yestary_spot_selling' % currency, spot_selling)  
+        redis.set('%s_yesterday_spot_selling' % currency, now_spot_selling)  
     else:
         redis.decr('%s_count' % currency)
-        redis.set('%s_yestary_spot_selling' % currency, spot_selling)
+        redis.set('%s_yesterday_spot_selling' % currency, now_spot_selling)
 
     #check spot selling and send email
     if redis.get('%s_count' % currency) == 3:
