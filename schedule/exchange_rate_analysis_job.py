@@ -1,12 +1,14 @@
 from datetime import datetime, timezone, timedelta
 from sendEmail.send_email import send_email
-from webCrawler.foreign_exchange_rate import get_daily_rate
-from dataAccess.postgresql.data_access import insert_all_exchange_rate
+from dataAccess.postgresql.data_access import get_currency_exchange_rate_by_date
 
-def get_and_save_exchange_rate():
-    dailyRateList = get_daily_rate()
+def three_day_alert():
 
-    if not dailyRateList:
+    tody = datetime.now(timezone.utc).date() - timedelta(days = 1)
+
+    currency_obj = get_currency_exchange_rate_by_date(tody, 'usd')
+
+    if not currency_obj is None:
         now = datetime.now(timezone.utc)
         local_datetime = now + timedelta(hours = 8)
 
@@ -15,7 +17,6 @@ def get_and_save_exchange_rate():
         send_email(title, content)
     
     else:
-        insert_all_exchange_rate(dailyRateList)
 
         now = datetime.now(timezone.utc)
         local_datetime = now + timedelta(hours = 8)

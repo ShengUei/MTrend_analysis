@@ -2,7 +2,7 @@
 from apscheduler.schedulers.background import BlockingScheduler
 from datetime import datetime, timezone, timedelta
 
-from schedule.exchange_rate_job import get_and_save_exchange_rate
+from schedule.exchange_rate_analysis_job import get_and_save_exchange_rate
 from schedule.show_pid_job import show_pid
 from sendEmail.send_email import send_email
 
