@@ -1,7 +1,8 @@
 # Note: the module name is psycopg, not psycopg3
 import psycopg
 from psycopg.rows import dict_row
-from setting.connect_setting import get_conn_setting
+
+from setting.connect_setting import get_conn_setting, get_redis_setting
 
 # Connect to database
 def openConnection():
