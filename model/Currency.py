@@ -1,4 +1,4 @@
-import json
+# import json
 
 class Currency():
     def __init__(self):
@@ -57,15 +57,17 @@ class Currency():
     def spot_selling(self, input_spot_selling):
         self.__spot_selling = input_spot_selling
     
-    def to_json(self):
-        #example: self.__currency = American Dollar (USD)
-        abbr = self.__currency.split('(')[1].split(')')[0]
+    # def to_json(self):
+    #     #example: self.__currency = American Dollar (USD)
+    #     abbr = self.__currency.split('(')[1].split(')')[0]
 
-        dict = {"quoted_date": self.__quoted_date.strftime('%Y-%m-%d'),
-                "currency": abbr,
-                "cash_buying": float(self.__cash_buying),
-                "cash_selling": float(self.__cash_selling),
-                "spot_buying": float(self.__spot_buying),
-                "spot_selling": float(self.__spot_selling)}
+    #     dict = {
+    #             "quoted_date": self.__quoted_date.strftime('%Y-%m-%d'),
+    #             "currency": abbr,
+    #             "cash_buying": float(self.__cash_buying),
+    #             "cash_selling": float(self.__cash_selling),
+    #             "spot_buying": float(self.__spot_buying),
+    #             "spot_selling": float(self.__spot_selling)
+    #             }
 
-        return json.dumps(dict) 
+    #     return json.dumps(dict) 
