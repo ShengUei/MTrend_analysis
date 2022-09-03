@@ -2,11 +2,11 @@
 from apscheduler.schedulers.background import BlockingScheduler
 from datetime import datetime, timezone, timedelta
 
-from schedule.exchange_rate_analysis_job import get_and_save_exchange_rate
+from schedule.exchange_rate_analysis_job import three_day_alert
 from schedule.show_pid_job import show_pid
 from sendEmail.send_email import send_email
 
-get_and_save_exchange_rate()
+three_day_alert()
 
 # scheduler = BackgroundScheduler()
 scheduler = BlockingScheduler()
@@ -16,8 +16,8 @@ print("Run schedule.py at %s" % datetime.now(timezone.utc))
 try:
     print("Add Jobs to Scheduler at %s" % datetime.now(timezone.utc))
 
-    #每週一 ~ 五 18:00 ，由網路抓匯率與存匯率至DB
-    scheduler.add_job(get_and_save_exchange_rate, 'cron', day_of_week = '1-5', hour = 18, minute = 0, timezone = 'Asia/Taipei')
+    #每週一 ~ 五 09:00 ，由 DB 抓匯率並分析
+    scheduler.add_job(three_day_alert, 'cron', day_of_week = '1-5', hour = 9, minute = 0, timezone = 'Asia/Taipei')
 
     scheduler.add_job(show_pid, 'interval', hours = 1)
 
@@ -29,6 +29,6 @@ except Exception as e:
     now = datetime.now(timezone.utc)
     local_datetime = now + timedelta(hours = 8)
 
-    title = "Run scheduler Failure"
-    content = "Run scheduler Failure at {}".format(local_datetime.strftime('%Y/%m/%d %H:%M:%S'))
+    title = "Run three_day_alert scheduler Failure"
+    content = "Run three_day_alert scheduler Failure at {}".format(local_datetime.strftime('%Y/%m/%d %H:%M:%S'))
     send_email(title, content)
