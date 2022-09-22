@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 import smtplib
 
 from setting.connect_setting import get_email_setting
-from logger.logger import get_logger
+from logger.logger import get_logger, close_handler
 
 def send_email(title, content):
     logger = get_logger()
@@ -39,14 +39,12 @@ def send_email(title, content):
             smtp.login(email_setting['sender'], email_setting['sender_password'])  
 
         except smtplib.SMTPException as e:
-            print("SMTPException message: %s" % e)
-            logger.error("BaseException : %s" % e)
+            logger.error("BaseException : %s" % e, exc_info=True)
 
         else:
             #寄送郵件
-            smtp.send_message(email) 
-            print("Send email Complete!")
-            logger.info("Send email Complete!")
+            smtp.send_message(email)
 
         finally:
             smtp.quit()
+            close_handler(logger)

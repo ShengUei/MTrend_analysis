@@ -1,6 +1,6 @@
 from dataAccess.postgresql.connection import openConnection
 from model.Currency import Currency
-from logger.logger import get_logger
+from logger.logger import get_logger, close_handler
 
 
 def get_currency_exchange_rate_by_date(date, currency):
@@ -19,14 +19,11 @@ def get_currency_exchange_rate_by_date(date, currency):
 
     except BaseException as e:
         conn.rollback()
-        print("BaseException : %s" % e)
-        logger.error("BaseException : %s" % e)
+        logger.error("BaseException : %s" % e, exc_info=True)
         return None
 
     else:
         conn.commit()
-        print("Get %s Exchange Rate is Success" % currency)
-        logger.info("Get %s Exchange Rate is Success" % currency)
         currency_obj = Currency()
         
         currency_obj.quoted_date = record.get('quoted_date')
@@ -40,3 +37,4 @@ def get_currency_exchange_rate_by_date(date, currency):
         
     finally:
         conn.close()
+        close_handler(logger)
